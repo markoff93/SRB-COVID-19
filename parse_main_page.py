@@ -51,7 +51,8 @@ col_sm_8_link = row_link.find('div', class_='col-sm-8 col-lg-10 '
 newsitem_inner = col_sm_8_link.find('div', class_='newsitem-inner')
 tts_content = newsitem_inner.find('div', class_='tts-content')
 
-# Check if there is 'Информације' substring in h1 class col-xs-12
+# Check if there is 'Информације' substring in h1 class col-xs-12 ------
+latest_number_of_cases = list()
 if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
     logging.info("There IS new information about the COVID-19!")
     row_tts_link = tts_content.find('div', class_='row')
@@ -61,14 +62,10 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
         end_index = text_covid19.index("потврђених")
 
         cases = text_covid19[start_index+20:end_index]
-        print(int(cases))
+        latest_number_of_cases.append(int(cases))
     except ValueError:
         logging.error("Couldn't find 'регистровано укупно' or"
                       "'потврђених' string!")
 
 else:
     logging.info("There is NO new information about the COVID-19!")
-
-
-# print(row_tts_link.p.text)
-# print(tts_content)
