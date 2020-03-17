@@ -71,6 +71,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
             data_list = list((data.items()))
             last_value = int(data_list[-1][-1])
+            previous_value = int(data_list[-2][-1])
 
             if cases != last_value:
                 # Update JSON
@@ -84,10 +85,23 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 logging.info("Successfully updated JSON!")
 
                 # Visualize
-                plt.bar(range(len(data)), list(data.values()),
-                        align='center')
+                bar = plt.bar(range(len(data)), list(data.values()),
+                              align='center')
                 plt.xticks(range(len(data)), list(data.keys()))
-                plt.savefig("latest_report.png")
+                plt.ylabel('Broj zaraženih')
+                plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
+                             f' mart 2020.', fontsize=12,
+                             fontweight='bold')
+                plt.text(0, 60, f'Broj novozaraženih osoba \nu '
+                                f'odnosu na {int(day)-1}. mart: '
+                                f'\n+{cases - previous_value}',
+                                fontsize=8, fontweight='bold')
+                for rect in bar:
+                    height = rect.get_height()
+                    plt.text(rect.get_x() + rect.get_width()/2.0,
+                             height, '%d' % int(height), ha='center',
+                             va='bottom')
+                plt.savefig("Poslednji_izveštaj.png")
             else:
                 logging.info("No new number of cases "
                              "to append to JSON!")
