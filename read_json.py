@@ -1,13 +1,12 @@
 import json
-import matplotlib.pyplot as plt
+from datetime import date
 
-with open('data.json') as json_file:
+with open('data.json', 'r+') as json_file:
     data = json.load(json_file)
 
-    plt.bar(range(len(data)),
-            list(data.values()),
-            align='center')
-    plt.xticks(range(len(data)),
-               list(data.keys()))
+    data_list = list((data.items()))
+    last_value = int(data_list[-1][-1])
 
-    plt.savefig("mygraph_from_json.png")
+    today = date.today()
+    day = str(today).split('-')[-1]
+    print(day)

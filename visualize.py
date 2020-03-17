@@ -1,9 +1,12 @@
-from bs4 import BeautifulSoup
-import requests
+import json
 import logging
 import matplotlib.pyplot as plt
+import requests
+from datetime import date
+from bs4 import BeautifulSoup
 
-logging.basicConfig(filename='script.log', level=logging.DEBUG)
+logging.basicConfig(filename='visualize.log', level=logging.INFO,
+                    filemode='w')
 
 # Parse main page ------------------------------------------------------
 source = requests.get('https://www.zdravlje.gov.rs/sekcija/'
@@ -53,42 +56,44 @@ newsitem_inner = col_sm_8_link.find('div', class_='newsitem-inner')
 tts_content = newsitem_inner.find('div', class_='tts-content')
 
 # Check if there is 'Информације' substring in h1 class col-xs-12 ------
-latest_number_of_cases_list = [1, 2, 5, 12, 18, 24, 35, 46, 48, 57]
-latest_number_of_cases_dates_dict = {"6. \nмарт": 1,
-                                     "9. \nмарт": 2,
-                                     "10. \nмарт": 5,
-                                     "11. \nмарт": 18,
-                                     "12. \nмарт": 24,
-                                     "13. \nмарт": 35,
-                                     "14. \nмарт": 46,
-                                     "15. \nмарт": 48,
-                                     "16. \nмарт": 57}
 if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
     logging.info("There IS new information about the COVID-19!")
     row_tts_link = tts_content.find('div', class_='row')
     text_covid19 = row_tts_link.p.text
+
     try:
         start_index = text_covid19.index("регистровано укупно")
         end_index = text_covid19.index("потврђених")
+        cases = int(text_covid19[start_index+20:end_index])
 
-        cases = text_covid19[start_index+20:end_index]
-        if int(cases) != latest_number_of_cases_list[-1]:
-            latest_number_of_cases_list.append(int(cases))
-            logging.info("New number of cases appended!")
-        else:
-            logging.info("No new number of cases!")
+        with open("data.json", "r+") as json_file:
+            data = json.load(json_file)
+
+            data_list = list((data.items()))
+            last_value = int(data_list[-1][-1])
+
+            if cases != last_value:
+                # Update JSON
+                logging.info("New number of cases to append to JSON!")
+                today = date.today()
+                day = str(today).split('-')[-1]
+                to_append = {f"{day}. \nMarch": cases}
+                data.update(to_append)
+                json_file.seek(0)
+                json.dump(data, json_file)
+                logging.info("Successfully updated JSON!")
+
+                # Visualize
+                plt.bar(range(len(data)), list(data.values()),
+                        align='center')
+                plt.xticks(range(len(data)), list(data.keys()))
+                plt.savefig("latest_report.png")
+            else:
+                logging.info("No new number of cases "
+                             "to append to JSON!")
     except ValueError:
         logging.error("Couldn't find 'регистровано укупно' or"
                       "'потврђених' string!")
 
 else:
     logging.info("There is NO new information about the COVID-19!")
-
-# Visualize data -------------------------------------------------------
-plt.bar(range(len(latest_number_of_cases_dates_dict)),
-        list(latest_number_of_cases_dates_dict.values()),
-        align='center')
-plt.xticks(range(len(latest_number_of_cases_dates_dict)),
-           list(latest_number_of_cases_dates_dict.keys()))
-
-plt.savefig("mygraph.png")
