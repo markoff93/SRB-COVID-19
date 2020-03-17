@@ -93,7 +93,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                              "to append to JSON!")
     except ValueError:
         logging.error("Couldn't find 'регистровано укупно' or"
-                      "'потврђених' string!")
+                      "'потврђен' string!")
 
 else:
     logging.info("There is NO new information about the COVID-19!")
