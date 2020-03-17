@@ -63,7 +63,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
     try:
         start_index = text_covid19.index("регистровано укупно")
-        end_index = text_covid19.index("потврђених")
+        end_index = text_covid19.index("потврђен")
         cases = int(text_covid19[start_index+20:end_index])
 
         with open("data.json", "r+") as json_file:
@@ -77,7 +77,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 logging.info("New number of cases to append to JSON!")
                 today = date.today()
                 day = str(today).split('-')[-1]
-                to_append = {f"{day}. \nMarch": cases}
+                to_append = {f"{day}. \nmart": cases}
                 data.update(to_append)
                 json_file.seek(0)
                 json.dump(data, json_file)
