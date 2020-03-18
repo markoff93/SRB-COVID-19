@@ -1,3 +1,7 @@
+# TODO: Add separate script for sending emails,
+#  which are acquired from JSON file where
+#  key-value == Name, Last Name-Email!!!
+
 import json
 import logging
 import matplotlib.pyplot as plt
@@ -8,7 +12,10 @@ from bs4 import BeautifulSoup
 
 def double_coefficient(data_json):
 
-    # Extract keys and values from JSON
+    # TODO: Refactor code: delete case when comparing the last
+    #  two values, and have just one while loop!
+
+    # Extract values from JSON
     data_values = list(data_json.values())
 
     coefficient_dict = dict()
@@ -40,7 +47,8 @@ def double_coefficient(data_json):
 logging.basicConfig(filename='visualize.log', level=logging.INFO,
                     filemode='w')
 
-# Parse main page ------------------------------------------------------
+# Parse news page
+# TODO: Refactor the for loops: item, h1, and href!!!
 source = requests.get('https://www.zdravlje.gov.rs/sekcija/'
                       '345852/covid-19.php').text
 
@@ -69,11 +77,13 @@ hrefs = list()
 for href in h1s:
     hrefs.append(href.find('a', href=True))
 
+# Get list of links from news page
 links = list()
 for a in hrefs:
     links.append("https://www.zdravlje.gov.rs/" + a['href'])
 
-# Parse links from main page -------------------------------------------
+# Get page from latest link and parse latest page
+# TODO: Add parsing/check for the second latest news!!!
 source_link = requests.get(links[0]).text
 
 soup_link = BeautifulSoup(source_link, 'lxml')
@@ -87,7 +97,7 @@ col_sm_8_link = row_link.find('div', class_='col-sm-8 col-lg-10 '
 newsitem_inner = col_sm_8_link.find('div', class_='newsitem-inner')
 tts_content = newsitem_inner.find('div', class_='tts-content')
 
-# Check if there is 'Информације' substring in h1 class col-xs-12 ------
+# Check if there is 'Информације' substring in headline
 if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
     logging.info("There IS new information about the COVID-19!")
     row_tts_link = tts_content.find('div', class_='row')
@@ -135,10 +145,15 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                              va='bottom')
 
                 # Determine coefficient of duplication
-                determine_coefficient_dict = double_coefficient(data)
-                double_date = str(determine_coefficient_dict["start_"
-                                                         "double_date"]).replace('\n', '')
-                double_coeff = determine_coefficient_dict["coefficient"]
+                determine_coeff_dict = double_coefficient(data)
+                double_date = str(determine_coeff_dict[
+                                      "start_double_date"]).replace(
+                    '\n', '')
+                double_coeff = determine_coeff_dict["coefficient"]
+
+                # TODO: Add 'za koliko dana se
+                #  duplirao broj slucajeva' and add this
+                #  text below x-axis if possible!!!
                 plt.text(0, 50, f"Broj slučajeva se povećao "
                                 f"{double_coeff} puta \nod "
                                 f"{double_date}a.",
@@ -149,7 +164,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                              "to append to JSON!")
     except ValueError:
         logging.error("Couldn't find 'регистровано укупно' or"
-                      "'потврђен' string!")
+                      "'потврђен' substrings!")
 
 else:
     logging.info("There is NO new information about the COVID-19!")
