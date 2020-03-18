@@ -5,6 +5,38 @@ import requests
 from datetime import date
 from bs4 import BeautifulSoup
 
+
+def double_coefficient(data_json):
+
+    # Extract keys and values from JSON
+    data_values = list(data_json.values())
+
+    coefficient_dict = dict()
+    if data_values[-1] / data_values[-2] >= 2.0:
+        coefficient = data_values[-1] / data_values[-2]
+        coefficient_dict["start_double_date"] = \
+            list(data_json.items())[-2][0]
+        coefficient_dict["coefficient"] = \
+            round(coefficient, 2)
+        return coefficient_dict
+
+    else:
+        i = len(data_values) - 1
+        while i >= 0:
+            if data_values[-2] == data_values[i]:
+                i -= 1
+            else:
+                if data_values[-1] / data_values[i] >= 2.0:
+                    start_date_double = list(data_json.items())[i][0]
+                    coefficient = data_values[-1] / data_values[i]
+                    coefficient_dict["start_double_date"] = \
+                        start_date_double
+                    coefficient_dict["coefficient"] = \
+                        round(coefficient, 2)
+                    return coefficient_dict
+                i -= 1
+
+
 logging.basicConfig(filename='visualize.log', level=logging.INFO,
                     filemode='w')
 
@@ -101,6 +133,16 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                     plt.text(rect.get_x() + rect.get_width()/2.0,
                              height, '%d' % int(height), ha='center',
                              va='bottom')
+
+                # Determine coefficient of duplication
+                determine_coefficient_dict = double_coefficient(data)
+                double_date = str(determine_coefficient_dict["start_"
+                                                         "double_date"]).replace('\n', '')
+                double_coeff = determine_coefficient_dict["coefficient"]
+                plt.text(0, 50, f"Broj slučajeva se povećao "
+                                f"{double_coeff} puta \nod "
+                                f"{double_date}a.",
+                         fontsize=8, fontweight='bold')
                 plt.savefig("Poslednji_izveštaj.png")
             else:
                 logging.info("No new number of cases "
