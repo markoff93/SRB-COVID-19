@@ -113,7 +113,6 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
             data_list = list((data.items()))
             last_value = int(data_list[-1][-1])
-            previous_value = int(data_list[-2][-1])
 
             if cases != last_value:
                 # Update JSON
@@ -136,7 +135,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                              fontweight='bold')
                 plt.text(0, 60, f'Broj novozaraženih osoba \nu '
                                 f'odnosu na {int(day)-1}. mart: '
-                                f'\n+{cases - previous_value}',
+                                f'\n+{cases - last_value}',
                                 fontsize=8, fontweight='bold')
                 for rect in bar:
                     height = rect.get_height()
