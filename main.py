@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import requests
 
 # Setup logging to a file
-logging.basicConfig(filename='visualize.log', level=logging.INFO,
+logging.basicConfig(filename='main.log', level=logging.INFO,
                     filemode='w')
 
 
