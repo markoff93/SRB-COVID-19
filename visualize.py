@@ -1,91 +1,83 @@
-# TODO: Add separate script for sending emails,
-#  which are acquired from JSON file where
-#  key-value == Name, Last Name-Email!!!
-
-import json
-import logging
-import matplotlib.pyplot as plt
 import os
-import requests
-import smtplib
+import json
 import ssl
+import smtplib
+import logging
 from datetime import date
-from bs4 import BeautifulSoup
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
+import requests
+
+# Setup logging to a file
+logging.basicConfig(filename='visualize.log', level=logging.INFO,
+                    filemode='w')
 
 
 def send_emails(day_subject):
-    subject = f"SRB COVID-19 izveštaj na dan {day_subject}. mart 2020."
-    body = "Izveštaj se nalazi u prilogu."
-    sender_email = "covid19.srb@gmail.com"
-    receiver_email = ["covid19.srb@gmail.com",
-                      "markoni.matic@gmail.com"]
-    password = input("Type your password and press enter:")
+    with open("emails.json", "r+") as json_emails:
 
-    # Create a multipart message and set headers
-    message = MIMEMultipart()
-    message["Subject"] = subject
+        # Load JSON file
+        data_emails_dict = json.load(json_emails)
 
-    # Add body to email
-    message.attach(MIMEText(body, "plain"))
+        # Define email content and require the password
+        subject = f"SRB COVID-19 izveštaj na dan {day_subject}. " \
+                  f"mart 2020."
+        body = "Izveštaj se nalazi u prilogu."
+        sender_email = "covid19.srb@gmail.com"
+        receiver_email = list(data_emails_dict.values())
+        password = input("Type your password and press enter:")
 
-    filename = "Poslednji_izveštaj.png"  # In same directory as script
+        # Create a multipart message and set subject
+        message = MIMEMultipart()
+        message["Subject"] = subject
 
-    # Open PDF file in binary mode
-    img_data = open(filename, 'rb').read()
-    image = MIMEImage(img_data, name=os.path.basename(filename))
+        # Add body to email
+        message.attach(MIMEText(body, "plain"))
 
-    # Add attachment to message and convert message to string
-    message.attach(image)
-    text = message.as_string()
+        # Open image
+        filename = "Poslednji_izveštaj.png"
+        img = open(filename, 'rb')
+        img_data = img.read()
+        image = MIMEImage(img_data, name=os.path.basename(filename))
 
-    # Log in to server using secure context and send email
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465,
-                          context=context) as server:
-        server.login(sender_email, password)
-        for email in receiver_email:
-            server.sendmail(sender_email, email, text)
+        # Add attachment to message and convert message to string
+        message.attach(image)
+        text = message.as_string()
+
+        # Log in to server using secure context and send emails
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465,
+                              context=context) as server:
+            server.login(sender_email, password)
+            for email in receiver_email:
+                server.sendmail(sender_email, email, text)
+
+        # Close image
+        img.close()
 
 
 def double_coefficient(data_json):
-
-    # TODO: Refactor code: delete case when comparing the last
-    #  two values, and have just one while loop!
-
     # Extract values from JSON
     data_values = list(data_json.values())
 
+    # Determine coefficient and start_double_date
     coefficient_dict = dict()
-    if data_values[-1] / data_values[-2] >= 2.0:
-        coefficient = data_values[-1] / data_values[-2]
-        coefficient_dict["start_double_date"] = \
-            list(data_json.items())[-2][0]
-        coefficient_dict["coefficient"] = \
-            round(coefficient, 2)
-        return coefficient_dict
+    i = len(data_values) - 1
+    while i >= 0:
+        if data_values[-1] / data_values[i] >= 2.0:
+            start_date_double = list(data_json.items())[i][0]
+            coefficient = data_values[-1] / data_values[i]
+            coefficient_dict["start_double_date"] = \
+                start_date_double
+            coefficient_dict["coefficient"] = \
+                round(coefficient, 2)
+            return coefficient_dict
+        else:
+            i -= 1
 
-    else:
-        i = len(data_values) - 1
-        while i >= 0:
-            if data_values[-2] == data_values[i]:
-                i -= 1
-            else:
-                if data_values[-1] / data_values[i] >= 2.0:
-                    start_date_double = list(data_json.items())[i][0]
-                    coefficient = data_values[-1] / data_values[i]
-                    coefficient_dict["start_double_date"] = \
-                        start_date_double
-                    coefficient_dict["coefficient"] = \
-                        round(coefficient, 2)
-                    return coefficient_dict
-                i -= 1
-
-
-logging.basicConfig(filename='visualize.log', level=logging.INFO,
-                    filemode='w')
 
 # Parse news page
 # TODO: Refactor the for loops: item, h1, and href!!!
@@ -123,7 +115,6 @@ for a in hrefs:
     links.append("https://www.zdravlje.gov.rs/" + a['href'])
 
 # Get page from latest link and parse latest page
-# TODO: Add parsing/check for the second latest news!!!
 source_link = requests.get(links[0]).text
 
 soup_link = BeautifulSoup(source_link, 'lxml')
@@ -162,10 +153,11 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 to_append = {f"{day}. \nmart": cases}
                 data.update(to_append)
                 json_file.seek(0)
-                json.dump(data, json_file)
+                json.dump(data, json_file, indent=2)
                 logging.info("Successfully updated JSON!")
 
                 # Visualize
+                logging.info("Visualizing ...")
                 bar = plt.bar(range(len(data)), list(data.values()),
                               align='center')
                 plt.xticks(range(len(data)), list(data.keys()))
@@ -173,7 +165,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' mart 2020.', fontsize=12,
                              fontweight='bold')
-                plt.text(0, 60, f'Broj novozaraženih osoba \nu '
+                plt.text(0, 85, f'Broj novozaraženih osoba \nu '
                                 f'odnosu na {int(day)-1}. mart: '
                                 f'\n+{cases - last_value}',
                                 fontsize=8, fontweight='bold')
@@ -188,25 +180,32 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 double_date = str(determine_coeff_dict[
                                       "start_double_date"]).replace(
                     '\n', '')
+                double_date_number_list = [int(i) for i in
+                                           double_date.split(".") if
+                                           i.isdigit()]
+                double_date_number = int(double_date_number_list[0])
+
                 double_coeff = determine_coeff_dict["coefficient"]
 
-                # TODO: Add 'za koliko dana se
-                #  duplirao broj slucajeva' and add this
-                #  text below x-axis if possible!!!
-                plt.text(0, 50, f"Broj slučajeva se povećao "
-                                f"{double_coeff} puta \nod "
-                                f"{double_date}a.",
-                         fontsize=8, fontweight='bold')
+                plt.text(0, 70, f"Broj slučajeva se povećao "
+                                f"{double_coeff} puta "
+                                f"\nza {int(day)-double_date_number} "
+                                f"dana (od {double_date}a).",
+                                fontsize=8, fontweight='bold'
+                         )
                 plt.savefig("Poslednji_izveštaj.png")
+                logging.info("Successfully visualized JSON data!")
 
                 # Send emails
+                logging.info("Sending email ...")
                 send_emails(day)
+                logging.info("Emails are sent!")
             else:
                 logging.info("No new number of cases "
                              "to append to JSON!")
     except ValueError:
         logging.error("Couldn't find 'регистровано укупно' or"
-                      "'потврђен' substrings!")
+                      "'потврђен' substring!")
 
 else:
     logging.info("There is NO new information about the COVID-19!")

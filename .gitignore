@@ -130,3 +130,6 @@ dmypy.json
 
 # Log files
 .log
+
+# All emails
+emails_all.json
