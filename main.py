@@ -131,13 +131,12 @@ tts_content = newsitem_inner.find('div', class_='tts-content')
 # Check if there is 'Информације' substring in headline
 if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
     logging.info("There IS new information about the COVID-19!")
-    row_tts_link = tts_content.find('div', class_='row')
-    text_covid19 = row_tts_link.p.text
+    row_tts_link = str(tts_content.find('div', class_='row').text)
 
     try:
-        start_index = text_covid19.index("регистровано укупно")
-        end_index = text_covid19.index("потврђен")
-        cases = int(text_covid19[start_index+20:end_index])
+        start_index = row_tts_link.index("регистровано укупно")
+        end_index = row_tts_link.index("потврђен")
+        cases = int(row_tts_link[start_index+20:end_index])
 
         with open("data.json", "r+") as json_file:
             data = json.load(json_file)
