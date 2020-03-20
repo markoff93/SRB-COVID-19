@@ -164,7 +164,8 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' mart 2020.', fontsize=12,
                              fontweight='bold')
-                plt.text(0, 85, f'Broj novozaraženih osoba \nu '
+                text_top_h = len(data) - 20
+                plt.text(0, text_top_h, f'Broj novozaraženih osoba \nu '
                                 f'odnosu na {int(day)-1}. mart: '
                                 f'\n+{cases - last_value}',
                                 fontsize=8, fontweight='bold')
@@ -186,11 +187,13 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
                 double_coeff = determine_coeff_dict["coefficient"]
 
-                plt.text(0, 70, f"Broj slučajeva se povećao "
-                                f"{double_coeff} puta "
-                                f"\nza {int(day)-double_date_number} "
-                                f"dana (od {double_date}a).",
-                                fontsize=8, fontweight='bold'
+                text_bottom_h = text_top_h - 15
+                plt.text(0, text_bottom_h, f"Broj slučajeva se povećao "
+                                        f"{double_coeff} puta "
+                                        f"\nza "
+                                        f"{int(day)-double_date_number}"
+                                        f" dana (od {double_date}a).",
+                                        fontsize=8, fontweight='bold'
                          )
                 plt.savefig("Poslednji_izveštaj.png")
                 logging.info("Successfully visualized JSON data!")
