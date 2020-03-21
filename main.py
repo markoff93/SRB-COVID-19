@@ -134,9 +134,9 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
     row_tts_link = str(tts_content.find('div', class_='row').text)
 
     try:
-        start_index = row_tts_link.index("регистрован укупно")
+        start_index = row_tts_link.index("укупно")
         end_index = row_tts_link.index("потврђен")
-        cases = int(row_tts_link[start_index+19:end_index])
+        cases = int(row_tts_link[start_index+7:end_index])
 
         with open("data.json", "r+") as json_file:
             data = json.load(json_file)
@@ -165,11 +165,11 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' mart 2020.', fontsize=12,
                              fontweight='bold')
-                text_top_h = len(data) - 0.5
-                plt.text(0, 150, f'Broj novozaraženih osoba \nu '
-                                f'odnosu na {int(day)-1}. mart: '
-                                f'\n+{cases - last_value}',
-                                fontsize=8, fontweight='bold')
+                text_top_h = int(cases) - 20
+                plt.text(0, text_top_h, f'Broj novozaraženih osoba \nu '
+                                        f'odnosu na {int(day)-1}. mart:'
+                                        f'\n+{cases - last_value}',
+                                        fontsize=8, fontweight='bold')
                 for rect in bar:
                     height = rect.get_height()
                     plt.text(rect.get_x() + rect.get_width()/2.0,
@@ -188,13 +188,13 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
                 double_coeff = determine_coeff_dict["coefficient"]
 
-                text_bottom_h = text_top_h - 1
-                plt.text(0, 120, f"Broj slučajeva se povećao "
-                                        f"{double_coeff} puta "
-                                        f"\nza "
-                                        f"{int(day)-double_date_number}"
-                                        f" dana (od {double_date}a).",
-                                        fontsize=8, fontweight='bold'
+                text_bottom_h = text_top_h - 15
+                plt.text(0, text_bottom_h,
+                         f"Broj slučajeva se povećao "
+                         f"{double_coeff} puta \nza "
+                         f"{int(day)-double_date_number} "
+                         f"dana (od {double_date}a)."
+                         , fontsize=8, fontweight='bold'
                          )
                 plt.savefig("Poslednji_izveštaj.png")
                 logging.info("Successfully visualized JSON data!")
