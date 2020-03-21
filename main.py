@@ -134,9 +134,9 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
     row_tts_link = str(tts_content.find('div', class_='row').text)
 
     try:
-        start_index = row_tts_link.index("регистровано укупно")
+        start_index = row_tts_link.index("регистрован укупно")
         end_index = row_tts_link.index("потврђен")
-        cases = int(row_tts_link[start_index+20:end_index])
+        cases = int(row_tts_link[start_index+19:end_index])
 
         with open("data.json", "r+") as json_file:
             data = json.load(json_file)
@@ -160,12 +160,13 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 bar = plt.bar(range(len(data)), list(data.values()),
                               align='center')
                 plt.xticks(range(len(data)), list(data.keys()))
+                plt.tick_params(axis='x', which='major', labelsize=8)
                 plt.ylabel('Broj zaraženih')
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' mart 2020.', fontsize=12,
                              fontweight='bold')
-                text_top_h = len(data) - 20
-                plt.text(0, text_top_h, f'Broj novozaraženih osoba \nu '
+                text_top_h = len(data) - 0.5
+                plt.text(0, 150, f'Broj novozaraženih osoba \nu '
                                 f'odnosu na {int(day)-1}. mart: '
                                 f'\n+{cases - last_value}',
                                 fontsize=8, fontweight='bold')
@@ -187,8 +188,8 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
                 double_coeff = determine_coeff_dict["coefficient"]
 
-                text_bottom_h = text_top_h - 15
-                plt.text(0, text_bottom_h, f"Broj slučajeva se povećao "
+                text_bottom_h = text_top_h - 1
+                plt.text(0, 120, f"Broj slučajeva se povećao "
                                         f"{double_coeff} puta "
                                         f"\nza "
                                         f"{int(day)-double_date_number}"
