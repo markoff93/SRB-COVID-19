@@ -160,7 +160,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 bar = plt.bar(range(len(data)), list(data.values()),
                               align='center')
                 plt.xticks(range(len(data)), list(data.keys()))
-                plt.tick_params(axis='x', which='major', labelsize=8)
+                plt.tick_params(axis='x', which='major', labelsize=7)
                 plt.ylabel('Broj zaraženih')
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' mart 2020.', fontsize=12,
@@ -188,7 +188,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
                 double_coeff = determine_coeff_dict["coefficient"]
 
-                text_bottom_h = text_top_h - 15
+                text_bottom_h = text_top_h - 25
                 plt.text(0, text_bottom_h,
                          f"Broj slučajeva se povećao "
                          f"{double_coeff} puta \nza "
@@ -200,7 +200,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 logging.info("Successfully visualized JSON data!")
 
                 # Send emails
-                logging.info("Sending email ...")
+                logging.info("Sending emails ...")
                 send_emails(day)
                 logging.info("Emails are sent!")
             else:
