@@ -17,9 +17,9 @@ logging.basicConfig(filename='main.log', level=logging.INFO,
 
 
 def send_emails(day_subject):
-    json_to_parse = str(input("Enter the name of JSON file you want "
-                              "to visualize (emails.json or "
-                              "emails_all.json): "))
+    json_to_parse = str(input("Enter the name of JSON file with the "
+                              "list of emails (TEST: emails.json or"
+                              " PROD: emails_all.json): "))
     with open(json_to_parse, "r+") as json_emails:
 
         # Load JSON file
