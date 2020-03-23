@@ -17,7 +17,10 @@ logging.basicConfig(filename='main.log', level=logging.INFO,
 
 
 def send_emails(day_subject):
-    with open("emails.json", "r+") as json_emails:
+    json_to_parse = str(input("Enter the name of JSON file you want "
+                              "to visualize (emails.json or "
+                              "emails_all.json): "))
+    with open(json_to_parse, "r+") as json_emails:
 
         # Load JSON file
         data_emails_dict = json.load(json_emails)
@@ -191,7 +194,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 text_bottom_h = text_top_h - 25
                 plt.text(0, text_bottom_h,
                          f"Broj slučajeva se povećao "
-                         f"{double_coeff} puta \nza "
+                         f"{double_coeff} puta \nu poslednja "
                          f"{int(day)-double_date_number} "
                          f"dana (od {double_date}a)."
                          , fontsize=8, fontweight='bold'
