@@ -17,9 +17,17 @@ logging.basicConfig(filename='main.log', level=logging.INFO,
 
 
 def send_emails(day_subject):
-    json_to_parse = str(input("Enter the name of JSON file with the "
-                              "list of emails (TEST: emails.json or"
-                              " PROD: emails_all.json): "))
+    # Prompt for correct input
+    while True:
+        json_to_parse = str(input(
+            "Enter the name of JSON file with the "
+            "list of emails (TEST: emails.json or "
+            "PROD: emails_all.json): "))
+        if json_to_parse == "emails.json" or \
+                json_to_parse == "emails_all.json":
+            break
+
+    # Read email list
     with open(json_to_parse, "r+") as json_emails:
 
         # Load JSON file
@@ -168,6 +176,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' mart 2020.', fontsize=12,
                              fontweight='bold')
+                # TODO: Fix text_top_h value generation
                 text_top_h = int(cases) - 20
                 plt.text(0, text_top_h, f'Broj novozaraženih osoba \nu '
                                         f'odnosu na {int(day)-1}. mart:'
@@ -190,8 +199,8 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 double_date_number = int(double_date_number_list[0])
 
                 double_coeff = determine_coeff_dict["coefficient"]
-
-                text_bottom_h = text_top_h - 25
+                # TODO: Fix text_bottom_h value generation
+                text_bottom_h = text_top_h - 35
                 plt.text(0, text_bottom_h,
                          f"Broj slučajeva se povećao "
                          f"{double_coeff} puta \nu poslednja "
