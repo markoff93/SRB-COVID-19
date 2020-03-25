@@ -200,7 +200,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
                 double_coeff = determine_coeff_dict["coefficient"]
                 # TODO: Fix text_bottom_h value generation
-                text_bottom_h = text_top_h - 35
+                text_bottom_h = text_top_h - 45
                 plt.text(0, text_bottom_h,
                          f"Broj slučajeva se povećao "
                          f"{double_coeff} puta \nu poslednja "
