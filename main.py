@@ -171,13 +171,13 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 bar = plt.bar(range(len(data)), list(data.values()),
                               align='center')
                 plt.xticks(range(len(data)), list(data.keys()))
-                plt.tick_params(axis='x', which='major', labelsize=7)
+                plt.tick_params(axis='x', which='major', labelsize=6)
                 plt.ylabel('Broj zaraženih')
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' mart 2020.', fontsize=12,
                              fontweight='bold')
                 # TODO: Fix text_top_h value generation
-                text_top_h = int(cases) - 20
+                text_top_h = int(cases) - 30
                 plt.text(0, text_top_h, f'Broj novozaraženih osoba \nu '
                                         f'odnosu na {int(day)-1}. mart:'
                                         f'\n+{cases - last_value}',
@@ -200,7 +200,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
                 double_coeff = determine_coeff_dict["coefficient"]
                 # TODO: Fix text_bottom_h value generation
-                text_bottom_h = text_top_h - 45
+                text_bottom_h = text_top_h - 55
                 plt.text(0, text_bottom_h,
                          f"Broj slučajeva se povećao "
                          f"{double_coeff} puta \nu poslednja "
