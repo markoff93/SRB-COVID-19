@@ -125,8 +125,21 @@ links = list()
 for a in hrefs:
     links.append("https://www.zdravlje.gov.rs/" + a['href'])
 
+# Prompt for link number
+logging.info("Prompting for link number...")
+for i, print_link in enumerate(links):
+    print(f"{i}. {print_link}")
+
+while True:
+    choose_link = int(input("Enter the link number from above, "
+                            "with 'informacije o' text in it: "))
+
+    if not choose_link > len(links) - 1:
+        break
+logging.info("Link number successfully entered!")
+
 # Get page from latest link and parse latest page
-source_link = requests.get(links[0]).text
+source_link = requests.get(links[choose_link]).text
 
 soup_link = BeautifulSoup(source_link, 'lxml')
 
@@ -176,12 +189,6 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' mart 2020.', fontsize=12,
                              fontweight='bold')
-                # TODO: Fix text_top_h value generation
-                text_top_h = int(cases) - 30
-                plt.text(0, text_top_h, f'Broj novozaraženih osoba \nu '
-                                        f'odnosu na {int(day)-1}. mart:'
-                                        f'\n+{cases - last_value}',
-                                        fontsize=8, fontweight='bold')
                 for rect in bar:
                     height = rect.get_height()
                     plt.text(rect.get_x() + rect.get_width()/2.0,
@@ -199,15 +206,21 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 double_date_number = int(double_date_number_list[0])
 
                 double_coeff = determine_coeff_dict["coefficient"]
-                # TODO: Fix text_bottom_h value generation
-                text_bottom_h = text_top_h - 55
-                plt.text(0, text_bottom_h,
-                         f"Broj slučajeva se povećao "
-                         f"{double_coeff} puta \nu poslednja "
-                         f"{int(day)-double_date_number} "
-                         f"dana (od {double_date}a)."
-                         , fontsize=8, fontweight='bold'
+
+                # Put additional info as text on the plot
+                plt.text(0.05, 0.8,
+                         f'Broj novozaraženih osoba'
+                         f'\nu odnosu na {int(day)-1}. mart:'
+                         f'\n+{cases - last_value}'
+                         f'\n\nBroj slučajeva se povećao'
+                         f' {double_coeff} puta'
+                         f'\nu poslednja'
+                         f' {int(day)-double_date_number}'
+                         f' dana (od {double_date}a).',
+                         fontsize=8, fontweight='bold',
+                         transform=plt.gca().transAxes
                          )
+
                 plt.savefig("Poslednji_izveštaj.png")
                 logging.info("Successfully visualized JSON data!")
 
