@@ -219,8 +219,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                          f'\nu odnosu na {int(day)-1}. mart:'
                          f'\n+{cases - last_value}'
                          f'\n\nBroj slučajeva se povećao'
-                         f' {double_coeff} puta'
-                         f'\nu poslednja'
+                         f' {double_coeff} puta \nza'
                          f' {int(day)-double_date_number}'
                          f' dana (od {double_date}a).',
                          fontsize=8, fontweight='bold',
