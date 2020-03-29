@@ -90,56 +90,61 @@ def double_coefficient(data_json):
             i -= 1
 
 
-# Parse news page
-# TODO: Refactor the for loops: item, h1, and href!!!
-source = requests.get('https://www.zdravlje.gov.rs/sekcija/'
-                      '345852/covid-19.php').text
+def parse_news_page():
+    # Parse news page
+    # TODO: Refactor the for loops: item, h1, and href!!!
+    source = requests.get('https://www.zdravlje.gov.rs/sekcija/'
+                          '345852/covid-19.php').text
 
-soup = BeautifulSoup(source, 'lxml')
+    soup = BeautifulSoup(source, 'lxml')
 
-page = soup.find('div', class_='page pagelang-sr')
-news = page.find('div', class_='news')
-container = news.find('div', class_='container-fluid blue-bg')
-row = container.find('div', class_='row')
-col_sm_8 = row.find('div', class_='col-sm-8')
-nl_wrapper = col_sm_8.find('div', class_='nl-wrapper')
-list_unstyled = nl_wrapper.find('ul', class_='list-unstyled news-list')
+    page = soup.find('div', class_='page pagelang-sr')
+    news = page.find('div', class_='news')
+    container = news.find('div', class_='container-fluid blue-bg')
+    row = container.find('div', class_='row')
+    col_sm_8 = row.find('div', class_='col-sm-8')
+    nl_wrapper = col_sm_8.find('div', class_='nl-wrapper')
+    list_unstyled = nl_wrapper.find('ul', class_='list-unstyled news-list')
 
-list_news = list_unstyled.find_all('li')
+    list_news = list_unstyled.find_all('li')
 
-news_text = list()
-for item in list_unstyled.find_all('li'):
-    new = item.find('div', class_='news-text')
-    news_text.append(new)
+    news_text = list()
+    for item in list_unstyled.find_all('li'):
+        new = item.find('div', class_='news-text')
+        news_text.append(new)
 
-h1s = list()
-for h1 in news_text:
-    h1s.append(h1.find('h1', class_="press-title"))
+    h1s = list()
+    for h1 in news_text:
+        h1s.append(h1.find('h1', class_="press-title"))
 
-hrefs = list()
-for href in h1s:
-    hrefs.append(href.find('a', href=True))
+    hrefs = list()
+    for href in h1s:
+        hrefs.append(href.find('a', href=True))
 
-# Get list of links from news page
-links = list()
-for a in hrefs:
-    links.append("https://www.zdravlje.gov.rs/" + a['href'])
+    # Get list of links from news page
+    links = list()
+    for a in hrefs:
+        links.append("https://www.zdravlje.gov.rs/" + a['href'])
+
+    return links
+
 
 # Prompt for link number
+links_to_parse = parse_news_page()
 logging.info("Prompting for link number...")
-for i, print_link in enumerate(links):
+for i, print_link in enumerate(links_to_parse):
     print(f"{i}. {print_link}")
 
 while True:
     choose_link = int(input("Enter the link number from above, "
                             "with 'informacije o' text in it: "))
 
-    if not choose_link > len(links) - 1:
+    if not choose_link > len(links_to_parse) - 1:
         break
 logging.info("Link number successfully entered!")
 
-# Get page from latest link and parse latest page
-source_link = requests.get(links[choose_link]).text
+# Get page from chosen link and parse page
+source_link = requests.get(links_to_parse[choose_link]).text
 
 soup_link = BeautifulSoup(source_link, 'lxml')
 
@@ -173,7 +178,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 logging.info("New number of cases to append to JSON!")
                 today = date.today()
                 day = str(today).split('-')[-1]
-                to_append = {f"{day}. \nmart": cases}
+                to_append = {f"{day}. mart": cases}
                 data.update(to_append)
                 json_file.seek(0)
                 json.dump(data, json_file, indent=2)
@@ -182,8 +187,9 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 # Visualize
                 logging.info("Visualizing ...")
                 bar = plt.bar(range(len(data)), list(data.values()),
-                              align='center')
-                plt.xticks(range(len(data)), list(data.keys()))
+                              align='center', width=0.6)
+                plt.xticks(range(len(data)), list(data.keys()),
+                           rotation=45)
                 plt.tick_params(axis='x', which='major', labelsize=6)
                 plt.ylabel('Broj zaraženih')
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
@@ -193,7 +199,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                     height = rect.get_height()
                     plt.text(rect.get_x() + rect.get_width()/2.0,
                              height, '%d' % int(height), ha='center',
-                             va='bottom')
+                             va='bottom', fontsize=6)
 
                 # Determine coefficient of duplication
                 determine_coeff_dict = double_coefficient(data)
