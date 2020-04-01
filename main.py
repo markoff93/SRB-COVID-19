@@ -16,7 +16,7 @@ logging.basicConfig(filename='main.log', level=logging.INFO,
                     filemode='w')
 
 
-def send_emails(day_subject):
+def send_emails(day_subject, month_input):
     # Prompt for correct input
     while True:
         json_to_parse = str(input(
@@ -35,7 +35,7 @@ def send_emails(day_subject):
 
         # Define email content and require the password
         subject = f"SRB COVID-19 izveštaj na dan {day_subject}. " \
-                  f"mart 2020."
+                  f"{month_input} 2020."
         body = "Izveštaj se nalazi u prilogu."
         sender_email = "covid19.srb@gmail.com"
         receiver_email = list(data_emails_dict.values())
@@ -104,7 +104,8 @@ def parse_news_page():
     row = container.find('div', class_='row')
     col_sm_8 = row.find('div', class_='col-sm-8')
     nl_wrapper = col_sm_8.find('div', class_='nl-wrapper')
-    list_unstyled = nl_wrapper.find('ul', class_='list-unstyled news-list')
+    list_unstyled = nl_wrapper.find('ul', class_='list-unstyled news-'
+                                                 'list')
 
     list_news = list_unstyled.find_all('li')
 
@@ -171,14 +172,25 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
             data = json.load(json_file)
 
             data_list = list((data.items()))
+            previous_date = data_list[-1][0].replace("'", "")
             last_value = int(data_list[-1][-1])
 
             if cases != last_value:
+                # Prompt for correct month
+                months_srb = ['januar', 'februar', 'mart', 'april',
+                              'maj', 'jun', 'jul', 'avgust',
+                              'septembar', 'oktobar', 'novembar',
+                              'decembar']
+                print(f"\nValid month format:\n {months_srb}\n")
+                while True:
+                    month = str(input("Enter the current month: "))
+                    if month in months_srb:
+                        break
                 # Update JSON
                 logging.info("New number of cases to append to JSON!")
                 today = date.today()
                 day = str(today).split('-')[-1]
-                to_append = {f"{day}. mart": cases}
+                to_append = {f"{day}. {month}": cases}
                 data.update(to_append)
                 json_file.seek(0)
                 json.dump(data, json_file, indent=2)
@@ -193,7 +205,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 plt.tick_params(axis='x', which='major', labelsize=6)
                 plt.ylabel('Broj zaraženih')
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
-                             f' mart 2020.', fontsize=12,
+                             f' {month} 2020.', fontsize=12,
                              fontweight='bold')
                 for rect in bar:
                     height = rect.get_height()
@@ -214,13 +226,15 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 double_coeff = determine_coeff_dict["coefficient"]
 
                 # Put additional info as text on the plot
+                double_value = list(data.keys()).index(double_date)
+                end_value = list(data.values()).index(cases)
                 plt.text(0.05, 0.8,
                          f'Broj novozaraženih osoba'
-                         f'\nu odnosu na {int(day)-1}. mart:'
+                         f'\nu odnosu na {previous_date}:'
                          f'\n+{cases - last_value}'
                          f'\n\nBroj slučajeva se povećao'
                          f' {double_coeff} puta \nza'
-                         f' {int(day)-double_date_number}'
+                         f' {end_value-double_value}'
                          f' dana (od {double_date}a).',
                          fontsize=8, fontweight='bold',
                          transform=plt.gca().transAxes
@@ -231,7 +245,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
 
                 # Send emails
                 logging.info("Sending emails ...")
-                send_emails(day)
+                send_emails(day, month)
                 logging.info("Emails are sent!")
             else:
                 logging.info("No new number of cases "
