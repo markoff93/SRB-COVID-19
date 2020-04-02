@@ -166,7 +166,11 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
     try:
         start_index = row_tts_link.index("укупно")
         end_index = row_tts_link.index("потврђен")
-        cases = int(row_tts_link[start_index+7:end_index])
+        cases_str = row_tts_link[start_index+7:end_index]
+        if "." in cases_str:
+            cases = int(cases_str.replace(".",""))
+        else:
+            cases = int(cases_str)
 
         with open("data.json", "r+") as json_file:
             data = json.load(json_file)
@@ -202,7 +206,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                               align='center', width=0.6)
                 plt.xticks(range(len(data)), list(data.keys()),
                            rotation=45)
-                plt.tick_params(axis='x', which='major', labelsize=6)
+                plt.tick_params(axis='x', which='major', labelsize=5)
                 plt.ylabel('Broj zaraženih')
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
                              f' {month} 2020.', fontsize=12,
@@ -251,7 +255,7 @@ if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
                 logging.info("No new number of cases "
                              "to append to JSON!")
     except ValueError:
-        logging.error("Couldn't find 'регистровано укупно' or"
+        logging.error("Couldn't find 'укупно' or"
                       "'потврђен' substring!")
 
 else:
