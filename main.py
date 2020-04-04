@@ -87,7 +87,7 @@ def double_coefficient(data_json):
                 round(coefficient, 2)
             return coefficient_dict
         else:
-            i -= 1
+            j -= 1
 
 
 def parse_news_page():
