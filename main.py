@@ -159,7 +159,8 @@ newsitem_inner = col_sm_8_link.find('div', class_='newsitem-inner')
 tts_content = newsitem_inner.find('div', class_='tts-content')
 
 # Check if there is 'Информације' substring in headline
-if "Информације" in tts_content.find('h1', class_='col-xs-12').text:
+if "Информације" or "Информацијa" in \
+        tts_content.find('h1', class_='col-xs-12').text:
     logging.info("There IS new information about the COVID-19!")
     row_tts_link = str(tts_content.find('div', class_='row').text)
 
