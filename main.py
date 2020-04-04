@@ -76,11 +76,11 @@ def double_coefficient(data_json):
 
     # Determine coefficient and start_double_date
     coefficient_dict = dict()
-    i = len(data_values) - 1
-    while i >= 0:
-        if data_values[-1] / data_values[i] >= 2.0:
-            start_date_double = list(data_json.items())[i][0]
-            coefficient = data_values[-1] / data_values[i]
+    j = len(data_values) - 1
+    while j >= 0:
+        if data_values[-1] / data_values[j] >= 2.0:
+            start_date_double = list(data_json.items())[j][0]
+            coefficient = data_values[-1] / data_values[j]
             coefficient_dict["start_double_date"] = \
                 start_date_double
             coefficient_dict["coefficient"] = \
