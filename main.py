@@ -204,7 +204,7 @@ if "Информације" or "Информацијa" in \
                 # Visualize
                 logging.info("Visualizing ...")
                 bar = plt.bar(range(len(data)), list(data.values()),
-                              align='center', width=0.6)
+                              align='center', width=0.5)
                 plt.xticks(range(len(data)), list(data.keys()),
                            rotation=45)
                 plt.tick_params(axis='x', which='major', labelsize=5)
