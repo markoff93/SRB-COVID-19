@@ -216,7 +216,7 @@ if "Информације" or "Информацијa" in \
                     height = rect.get_height()
                     plt.text(rect.get_x() + rect.get_width()/2.0,
                              height, '%d' % int(height), ha='center',
-                             va='bottom', fontsize=6)
+                             va='bottom', fontsize=5)
 
                 # Determine coefficient of duplication
                 determine_coeff_dict = double_coefficient(data)
