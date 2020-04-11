@@ -207,16 +207,16 @@ if "Информације" or "Информацијa" in \
                               align='center', width=0.5)
                 plt.xticks(range(len(data)), list(data.keys()),
                            rotation=45)
-                plt.tick_params(axis='x', which='major', labelsize=5)
+                plt.tick_params(axis='x', which='major', labelsize=8)
                 plt.ylabel('Broj zaraženih')
                 plt.suptitle(f'SRB COVID-19 izveštaj na dan {day}.'
-                             f' {month} 2020.', fontsize=12,
+                             f' {month} 2020.', fontsize=18,
                              fontweight='bold')
                 for rect in bar:
                     height = rect.get_height()
                     plt.text(rect.get_x() + rect.get_width()/2.0,
                              height, '%d' % int(height), ha='center',
-                             va='bottom', fontsize=5)
+                             va='bottom', fontsize=8)
 
                 # Determine coefficient of duplication
                 determine_coeff_dict = double_coefficient(data)
@@ -241,10 +241,11 @@ if "Информације" or "Информацијa" in \
                          f' {double_coeff} puta \nza'
                          f' {end_value-double_value}'
                          f' dana (od {double_date}a).',
-                         fontsize=8, fontweight='bold',
+                         fontsize=12, fontweight='bold',
                          transform=plt.gca().transAxes
                          )
 
+                plt.gcf().set_size_inches(15, 10)
                 plt.savefig("Poslednji_izveštaj.png")
                 logging.info("Successfully visualized JSON data!")
 
