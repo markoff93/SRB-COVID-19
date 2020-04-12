@@ -36,7 +36,10 @@ def send_emails(day_subject, month_input):
         # Define email content and require the password
         subject = f"SRB COVID-19 izveštaj na dan {day_subject}. " \
                   f"{month_input} 2020."
-        body = "Izveštaj se nalazi u prilogu."
+        link_c = "https://covid19.rs/"
+        link_w = "https://www.worldometers.info/coronavirus/country/serbia/"
+        body = f"Izveštaj se nalazi u prilogu.\nKorisne informacije: {link_c}" \
+               f"\nDetaljna statistika za Srbiju: {link_w}"
         sender_email = "covid19.srb@gmail.com"
         receiver_email = list(data_emails_dict.values())
         password = input("Type your password and press enter:")
