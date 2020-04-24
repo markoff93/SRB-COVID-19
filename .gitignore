@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Log files
+.log
+
+# All emails
+emails_all.json
